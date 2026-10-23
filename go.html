@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<!-- ==========================================================
+ FILE 4 of 4: go.html   (TRACKING REDIRECT PAGE, small JavaScript only)
+ Click link:       go.html?o=OFFER_ID&a=AFFILIATE_ID
+ Impression link:  go.html?o=OFFER_ID&a=AFFILIATE_ID&t=imp   (records one impression, no redirect)
+ NOTE: in demo mode events are saved in the visitor's own browser. Real visitors' clicks
+ reach the admin only after the database/server is connected.
+ ========================================================== -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Redirecting…</title></head>
+<body style="font-family:sans-serif;padding:40px"><p id="m">Redirecting…</p>
+<script>
+(function(){
+  var q=new URLSearchParams(location.search),o=q.get('o'),a=q.get('a'),t=q.get('t');
+  var G=function(k){try{return JSON.parse(localStorage.getItem('vx_'+k))||[]}catch(e){return[]}};
+  var off=G('off').find(function(x){return x.id===o}),u=G('aff').find(function(x){return x.id===a});
+  if(!off||!u||off.status!=='live'||u.status!=='approved'||(u.offers||[]).indexOf(o)<0||!/^https?:\/\//i.test(off.link)){
+    document.getElementById('m').textContent='This link is not valid.';return}
+  if(t==='imp'){var im=G('imp');im.push({t:Date.now(),o:o,a:a,n:1});
+    try{localStorage.setItem('vx_imp',JSON.stringify(im))}catch(e){}
+    document.getElementById('m').textContent='';return}
+  var cid='c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),c=G('clk');
+  c.push({t:Date.now(),o:o,a:a,id:cid,n:1});
+  try{localStorage.setItem('vx_clk',JSON.stringify(c))}catch(e){}
+  location.replace(off.link.split('{click_id}').join(encodeURIComponent(cid)).split('{aff}').join(encodeURIComponent(a)));
+})();
+</script></body></html>

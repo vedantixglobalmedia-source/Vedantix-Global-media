@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!-- ==========================================================
+ FILE 2 of 4: portal.html   (PAGE STRUCTURE / HTML ONLY)
+ Needs portal.css (file 1) and portal.js (file 3) in the SAME folder.
+ The affiliate dashboard and admin panel are drawn inside #affRoot and #admRoot by portal.js.
+ ========================================================== -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Partner Portal | Vedantix Global Media</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portal.css">
+</head>
+<body>
+<div class="orbs"><span></span><span></span><span></span></div>
+<header><a href="index.html">Vedantix</a><span>PARTNER PORTAL</span></header>
+<div class="wrap">
+
+<!-- LOGIN / APPLY / ADMIN / RESET (before login) -->
+<div id="authView">
+  <div class="tabs">
+    <button class="tab on" data-t="login">Affiliate login</button>
+    <button class="tab" data-t="apply">Apply to join</button>
+    <button class="tab" data-t="admin">Admin login</button>
+  </div>
+
+  <div class="box" id="t-login">
+    <h2>Affiliate login</h2>
+    <p class="sub">Only approved partners can sign in.</p>
+    <form id="fLogin">
+      <label>Email<input type="email" name="email" required autocomplete="email"></label>
+      <label>Password<input type="password" name="password" required autocomplete="current-password"></label>
+      <div class="msg" id="mLogin"></div>
+      <button class="btn dark" type="submit">Log in</button>
+    </form>
+    <p class="note"><a href="#" data-forgot="aff">Forgot password?</a> · Not a partner yet? Use “Apply to join”.</p>
+  </div>
+
+  <div class="box hide" id="t-apply">
+    <h2>Apply to join</h2>
+    <p class="sub">Approval is by invitation after review, so not every application is accepted.</p>
+    <form id="fApply">
+      <label>Full name<input type="text" name="name" required autocomplete="name"></label>
+      <label>Email<input type="email" name="email" required autocomplete="email"></label>
+      <label>Phone / WhatsApp<input type="tel" name="phone" required autocomplete="tel"></label>
+      <label>Create password (min 8 characters)<input type="password" name="password" minlength="8" required autocomplete="new-password"></label>
+      <label>Full address<textarea name="address" rows="2" required autocomplete="street-address"></textarea></label>
+      <fieldset><legend>Which verticals do you work in?</legend><div class="chips" id="verts"></div></fieldset>
+      <fieldset><legend>Which traffic sources do you use?</legend><div class="chips" id="traffic"></div></fieldset>
+      <div class="row">
+        <label>City<input type="text" name="city" required></label>
+        <label>State<input type="text" name="state" required></label>
+        <label>Country<input type="text" name="country" required></label>
+      </div>
+      <label>Anything else we should know? (optional)<textarea name="notes" rows="3"></textarea></label>
+      <div class="msg" id="mApply"></div>
+      <button class="btn" type="submit">Submit application</button>
+    </form>
+  </div>
+
+  <div class="box hide" id="t-admin">
+    <h2>Admin login</h2>
+    <p class="sub">For Vedantix team only.</p>
+    <form id="fAdmin">
+      <label>Admin email<input type="email" name="email" required autocomplete="email"></label>
+      <label>Password<input type="password" name="password" required autocomplete="current-password"></label>
+      <div class="msg" id="mAdmin"></div>
+      <button class="btn dark" type="submit">Enter admin panel</button>
+    </form>
+    <p class="note"><a href="#" data-forgot="admin">Forgot admin password?</a></p>
+  </div>
+
+  <div class="box hide" id="t-reset">
+    <h2>Reset password</h2>
+    <p class="sub">Enter your account email to get a reset code.</p>
+    <div class="msg" id="mReset"></div>
+    <form id="fForgot">
+      <label>Email<input type="email" name="email" required></label>
+      <button class="btn dark" type="submit">Send reset code</button>
+    </form>
+    <form id="fReset" class="hide">
+      <input type="hidden" name="email">
+      <label>Reset code<input name="code" required inputmode="numeric"></label>
+      <label>New password (min 8 characters)<input type="password" name="password" minlength="8" required autocomplete="new-password"></label>
+      <button class="btn dark" type="submit">Set new password</button>
+    </form>
+  </div>
+</div>
+
+<!-- AFFILIATE DASHBOARD (drawn by portal.js) -->
+<div id="affView" class="hide"><div id="affRoot"></div></div>
+
+<!-- ADMIN PANEL (drawn by portal.js) -->
+<div id="admView" class="hide"><div id="admRoot"></div></div>
+
+</div>
+<div class="toast" id="toast"></div>
+<script src="portal.js"></script>
+</body>
+</html>
