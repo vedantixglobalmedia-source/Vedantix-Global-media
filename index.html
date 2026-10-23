@@ -138,8 +138,33 @@ section{scroll-margin-top:84px}
 /* niches */
 .niches{background:var(--sand)}
 .pills{display:flex;flex-wrap:wrap;gap:14px}
-.pill{background:var(--white);border:1px solid #D6CFBC;font-weight:700;padding:13px 26px;border-radius:999px;transition:background .2s,color .2s}
-.pill:hover,.pill.hot{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+.pill{font:inherit;font-weight:700;cursor:pointer;background:var(--white);border:2px solid #D6CFBC;color:var(--ink);padding:13px 26px;border-radius:999px;transition:background .2s,color .2s,transform .2s,border-color .2s}
+.pill:hover{transform:translateY(-2px);border-color:var(--ink)}
+.pill[aria-pressed="true"]{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+.niche-panel{margin-top:36px;background:var(--white);border:1px solid #D6CFBC;border-radius:var(--radius);padding:40px;display:flex;flex-direction:column;gap:32px;animation:nicheIn .45s ease both}
+@keyframes nicheIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.np-head h3{font-size:clamp(24px,3vw,34px)}
+.np-head p{color:var(--muted);margin-top:10px;max-width:720px}
+.np-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.np-fact{background:var(--cream);border-radius:16px;padding:18px 20px}
+.np-fact b{display:block;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--saffron-deep);margin-bottom:6px}
+.np-fact span{font-size:15px}
+.np-sub{font-family:var(--head);font-size:20px;margin-bottom:6px}
+.np-sub-note{font-size:14px;color:var(--muted);margin-bottom:18px}
+.np-creatives{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.cr{border-radius:18px;overflow:hidden;border:1px solid #D6CFBC;display:flex;flex-direction:column;background:var(--white);transition:transform .25s,box-shadow .25s}
+.cr:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(15,27,61,.14)}
+.cr-art{padding:24px 22px;min-height:200px;display:flex;flex-direction:column;justify-content:space-between;gap:16px;color:#fff;position:relative;overflow:hidden}
+.cr-art::after{content:"";position:absolute;right:-34px;top:-34px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.14)}
+.cr-art em{font-style:normal;font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.85;position:relative}
+.cr-art strong{font-family:var(--head);font-size:21px;line-height:1.18;position:relative}
+.cr-art .cta{align-self:flex-start;background:#fff;color:var(--ink);font-weight:700;font-size:13px;padding:8px 16px;border-radius:999px;position:relative}
+.cr-info{padding:16px 20px 20px;display:flex;flex-direction:column;gap:6px}
+.cr-info b{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.cr-info p{font-size:14px;color:var(--muted)}
+.np-note{font-size:14px;color:var(--ink);background:#FFF4DC;border:1px solid #E9C77B;border-radius:14px;padding:14px 18px}
+.np-cta{display:flex;flex-wrap:wrap;gap:14px}
+@media(max-width:760px){.niche-panel{padding:24px}}
 
 /* faq */
 .faq{display:flex;flex-direction:column;gap:14px;max-width:820px}
@@ -354,14 +379,15 @@ textarea{min-height:120px;resize:vertical}
       <div class="eyebrow">Niches</div>
       <h2>Focused where audiences are already looking.</h2>
     </div>
-    <div class="pills reveal">
-      <span class="pill hot">Home improvement</span>
-      <span class="pill">Finance</span>
-      <span class="pill">Health &amp; wellness</span>
-      <span class="pill">Loan</span>
-      <span class="pill">E-commerce</span>
-      <span class="pill">Insurance</span>
+    <div class="pills reveal" role="group" aria-label="Choose a niche">
+      <button type="button" class="pill" data-niche="home" aria-pressed="true">Home improvement</button>
+      <button type="button" class="pill" data-niche="finance" aria-pressed="false">Finance</button>
+      <button type="button" class="pill" data-niche="health" aria-pressed="false">Health &amp; wellness</button>
+      <button type="button" class="pill" data-niche="loan" aria-pressed="false">Loan</button>
+      <button type="button" class="pill" data-niche="ecom" aria-pressed="false">E-commerce</button>
+      <button type="button" class="pill" data-niche="insurance" aria-pressed="false">Insurance</button>
     </div>
+    <div class="niche-panel" id="nichePanel" aria-live="polite"></div>
   </div>
 </section>
 
@@ -477,6 +503,139 @@ document.getElementById('contactForm').addEventListener('submit', function(e){
   var body = 'Name: ' + f.name.value + '\nEmail: ' + f.email.value + '\nInterested in: ' + f.type.value + '\n\n' + f.message.value;
   window.location.href = 'mailto:vedantixglobalmedia@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
 });
+
+
+// niches: clickable buttons with sample creatives and details
+var NICHES = {
+  home: {
+    title: 'Home improvement', colors: ['#B96A00', '#7A4300'],
+    intro: 'Homeowners researching upgrades such as solar, roofing, windows, bathroom remodels and home security. Leads are usually quote requests that contractors pay for.',
+    facts: {
+      'Typical offers': 'Solar quotes, roofing and window replacement, bathroom and kitchen remodels, home security, HVAC repair',
+      'Payout models': 'Pay per lead (quote request form), sometimes pay per call or per booked appointment',
+      'Best traffic': 'Facebook and Google ads, SEO / blog, native ads, YouTube',
+      'Audience': 'Homeowners, mostly 30 to 65 years old, in the region the offer serves'
+    },
+    creatives: [
+      { fmt: 'Facebook feed ad', head: 'Thinking about solar? Get a free quote for your roof', cta: 'Get free quote', why: 'A short question headline with one clear next step. Works well on Facebook and Instagram.' },
+      { fmt: 'Native article ad', head: '5 home upgrades that can raise your home’s value', cta: 'Read the guide', why: 'An educational headline sends readers to a blog page first, then to the quote form.' },
+      { fmt: 'Landing page', head: 'Compare local roofing quotes in 2 minutes', cta: 'Start comparing', why: 'A simple one-step form with a clear privacy line and trust badges.' },
+      { fmt: 'Email', head: 'Is your bathroom ready for a refresh?', cta: 'See ideas', why: 'Photo-led email with one button that leads to the quote form.' }
+    ],
+    note: 'Check each offer’s allowed regions and daily caps before sending traffic.'
+  },
+  finance: {
+    title: 'Finance', colors: ['#0F1B3D', '#2F4BA0'],
+    intro: 'People learning to manage, save or grow their money: budgeting tools, credit checks, debt help, investing education, tax and accounting services.',
+    facts: {
+      'Typical offers': 'Credit score and report tools, budgeting apps, debt help information, investing education, tax filing software',
+      'Payout models': 'Pay per lead or sign-up, sometimes pay per qualified account',
+      'Best traffic': 'SEO / blog, YouTube, email, Google ads, native ads',
+      'Audience': 'Adults 25 to 55 comparing tools or learning the basics; local rules matter'
+    },
+    creatives: [
+      { fmt: 'Blog / SEO article', head: 'How to build a monthly budget you can actually keep', cta: 'Try the budget tool', why: 'Helpful content ranks over time and sends warm readers to the offer.' },
+      { fmt: 'Native ad', head: 'Do you know what is on your credit report?', cta: 'Check yours', why: 'A curiosity question that leads to a free report or score tool.' },
+      { fmt: 'YouTube video idea', head: '3 money habits to start this month', cta: 'Download the checklist', why: 'Short lessons build trust before the viewer clicks the link in the description.' },
+      { fmt: 'Email', head: 'Your simple 30-day savings plan', cta: 'Get the plan', why: 'A free plan as the hook, with the offer as the next step.' }
+    ],
+    note: 'Finance is regulated. Never promise guaranteed returns or income, show required disclosures, and read each advertiser’s rules before running ads.'
+  },
+  health: {
+    title: 'Health & wellness', colors: ['#14705A', '#0B4A3B'],
+    intro: 'Fitness, nutrition, sleep, skin care and wellness apps for people building healthier routines.',
+    facts: {
+      'Typical offers': 'Workout apps, meal plans, sleep and stress tools, skin care, supplement trials',
+      'Payout models': 'Pay per sale, free-trial sign-up, or pay per lead',
+      'Best traffic': 'Social organic, YouTube, SEO / blog, email; paid ads have strict platform rules',
+      'Audience': 'Adults 20 to 50 interested in routines, energy, sleep and fitness'
+    },
+    creatives: [
+      { fmt: 'Reel / short video', head: 'A 10-minute morning routine to start your day', cta: 'Try the free plan', why: 'Short, useful videos work well on social platforms and send people to the app or plan.' },
+      { fmt: 'Facebook feed ad', head: 'Struggling with sleep? Try this evening wind-down', cta: 'See the routine', why: 'Speaks to a real daily problem without promising a result.' },
+      { fmt: 'Blog / SEO article', head: 'Meal prep for beginners: a simple weekly plan', cta: 'Get the meal plan', why: 'A search-friendly guide that earns steady traffic month after month.' },
+      { fmt: 'Email', head: 'Your 7-day wellness starter kit', cta: 'Start today', why: 'A free starter kit as the hook, followed by the offer.' }
+    ],
+    note: 'Do not make medical claims or promise results. Many ad platforms and advertisers restrict health claims, so follow each offer’s compliance rules.'
+  },
+  loan: {
+    title: 'Loan', colors: ['#5B3FA8', '#33216B'],
+    intro: 'People comparing personal loans, student loans, car financing and debt consolidation. Leads are usually eligibility or application requests.',
+    facts: {
+      'Typical offers': 'Personal loan comparison, student loan information, car loans, debt consolidation, business loans',
+      'Payout models': 'Pay per lead, per qualified application, or per funded loan (usually the highest)',
+      'Best traffic': 'SEO / blog, Google ads, native ads, email',
+      'Audience': 'Adults 21 to 55 with a borrowing need; strict targeting by country and state'
+    },
+    creatives: [
+      { fmt: 'Search ad', head: 'Compare personal loan options in minutes', cta: 'Check your options', why: 'Matches what people type when they are ready to compare.' },
+      { fmt: 'Native ad', head: 'How to pick a loan that fits your budget', cta: 'Read the guide', why: 'An educational angle that builds trust before the application.' },
+      { fmt: 'Landing page', head: 'Answer a few questions to see loan options', cta: 'Get started', why: 'A short form with clear terms and a visible privacy link.' },
+      { fmt: 'Email', head: 'Thinking about consolidating your debt?', cta: 'See your options', why: 'Speaks to a common worry and leads to a simple comparison page.' }
+    ],
+    note: 'Show rates, fees and terms where required and never promise guaranteed approval. Some platforms restrict loan ads, so confirm the rules first.'
+  },
+  ecom: {
+    title: 'E-commerce', colors: ['#B3261E', '#7A1712'],
+    intro: 'Online stores in fashion, home, gadgets and beauty. Affiliates send shoppers to products and earn when they buy.',
+    facts: {
+      'Typical offers': 'Fashion and accessories, home and kitchen, gadgets, beauty, seasonal deals',
+      'Payout models': 'Commission per sale (a percentage of the order), sometimes pay per sign-up or app install',
+      'Best traffic': 'Social organic, Instagram and YouTube reviews, SEO / blog, email, push notifications',
+      'Audience': 'Online shoppers of all ages; festivals and sale seasons matter a lot'
+    },
+    creatives: [
+      { fmt: 'Instagram carousel', head: 'Top 5 festive gifts under budget', cta: 'Shop the picks', why: 'Curated lists are easy to save and share, and every card links to a product.' },
+      { fmt: 'YouTube review', head: 'Honest review: is this worth buying?', cta: 'See the deal', why: 'Real reviews build trust and turn viewers into buyers.' },
+      { fmt: 'Push notification', head: 'Sale ends tonight: extra discount inside', cta: 'Shop now', why: 'Short and time-limited, best used with a real deadline.' },
+      { fmt: 'Blog / SEO article', head: 'Best kitchen gadgets this year, compared', cta: 'See the list', why: 'Comparison posts bring in buyers who are close to a decision.' }
+    ],
+    note: 'Use only real prices and real discounts, and tell visitors when a link is an affiliate link.'
+  },
+  insurance: {
+    title: 'Insurance', colors: ['#1F6F8B', '#0F3F52'],
+    intro: 'People comparing health, car, life, travel and home insurance. Leads are usually quote requests.',
+    facts: {
+      'Typical offers': 'Car, health, life, travel and home insurance quotes',
+      'Payout models': 'Pay per lead or per call; a completed policy sale usually pays more',
+      'Best traffic': 'SEO / blog, Google ads, native ads, email, YouTube',
+      'Audience': 'Adults 25 to 60, often triggered by a renewal, a new car, a new family or a move'
+    },
+    creatives: [
+      { fmt: 'Search ad', head: 'Compare car insurance quotes in minutes', cta: 'Get quotes', why: 'Catches people at the moment they are shopping for a policy.' },
+      { fmt: 'Native ad', head: '5 things to check before you renew your policy', cta: 'Read now', why: 'A useful checklist that leads to a quote comparison.' },
+      { fmt: 'Landing page', head: 'Protect your family: find a life cover plan', cta: 'See plans', why: 'A calm, clear page with a short form and plain-language benefits.' },
+      { fmt: 'Email', head: 'Policy renewing soon? Compare before you pay', cta: 'Compare now', why: 'Timed around renewal dates, when people are most open to switching.' }
+    ],
+    note: 'Never suggest you are the insurer, keep any savings claims truthful, and follow advertiser and local regulator rules.'
+  }
+};
+
+var nicheBtns = document.querySelectorAll('.pill[data-niche]');
+var nichePanel = document.getElementById('nichePanel');
+function escHtml(t){ var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+function showNiche(key, scroll){
+  var n = NICHES[key]; if (!n) return;
+  nicheBtns.forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-niche') === key ? 'true' : 'false'); });
+  var facts = Object.keys(n.facts).map(function(k){
+    return '<div class="np-fact"><b>' + escHtml(k) + '</b><span>' + escHtml(n.facts[k]) + '</span></div>';
+  }).join('');
+  var cards = n.creatives.map(function(c){
+    return '<article class="cr"><div class="cr-art" style="background:linear-gradient(135deg,' + n.colors[0] + ',' + n.colors[1] + ')">' +
+      '<em>' + escHtml(c.fmt) + '</em><strong>' + escHtml(c.head) + '</strong><span class="cta">' + escHtml(c.cta) + '</span></div>' +
+      '<div class="cr-info"><b>Why it works</b><p>' + escHtml(c.why) + '</p></div></article>';
+  }).join('');
+  nichePanel.innerHTML =
+    '<div class="np-head"><h3>' + escHtml(n.title) + '</h3><p>' + escHtml(n.intro) + '</p></div>' +
+    '<div class="np-facts">' + facts + '</div>' +
+    '<div><h4 class="np-sub">Sample creative ideas</h4><p class="np-sub-note">Original sample layouts to give you an idea. Real creatives and rules depend on each advertiser and offer.</p><div class="np-creatives">' + cards + '</div></div>' +
+    '<div class="np-note"><b>Keep in mind:</b> ' + escHtml(n.note) + '</div>' +
+    '<div class="np-cta"><a class="btn btn-dark" href="portal.html">Apply as a partner</a><a class="btn btn-outline" href="#contact">Ask about ' + escHtml(n.title) + ' offers</a></div>';
+  nichePanel.style.animation = 'none'; void nichePanel.offsetWidth; nichePanel.style.animation = '';
+  if (scroll) nichePanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+nicheBtns.forEach(function(b){ b.addEventListener('click', function(){ showNiche(b.getAttribute('data-niche'), true); }); });
+showNiche('home', false);
 
 document.getElementById('year').textContent = new Date().getFullYear();
 </script>
