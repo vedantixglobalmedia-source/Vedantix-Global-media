@@ -26,7 +26,7 @@ const VENT = ["Home Improvement", "Finance", "Health & Wellness", "Loan", "E-com
 const TRAF = ["Facebook ads", "Google ads", "SEO / Blog", "Native ads", "Email", "Push", "Social organic", "YouTube", "Other"];
 const PTYPE = ["Lead", "Sale", "Install", "Call"];
 
-// --- PART 2: DATABASE LAYER (Supabase Integration) ---
+/* ===== PART 2: DATABASE LAYER (Supabase Integration) ===== */
 const SUPABASE_URL = 'https://mtygalcritplvahhodji.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_H0SSbV3_DnIWuO1o-spplQ_583Ukeb1';
 
@@ -35,13 +35,13 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const DB = {
   async add(data) {
     const { data: result, error } = await supabase
-      .from('queries')
+      .from('Queries') // Capital 'Q' jaisa aapki table me hai
       .insert([
         {
-          name: data.Name || data.name || '',
-          email: data.Email || data.email || '',
-          message: data.Message || data.message || '',
-          phone: data['Phone Number'] || data.Phone || data.phone || ''
+          'Name': data.Name || data.name || '',
+          'Email': data.Email || data.email || '',
+          'Message': data.Message || data.message || '',
+          'Phone Number': data['Phone Number'] || data.Phone || data.phone || ''
         }
       ]);
 
