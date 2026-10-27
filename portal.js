@@ -13,17 +13,81 @@ const VERT=['Home improvement','Finance','Health & wellness','Loan','E-commerce'
 const TRAF=['Facebook ads','Google ads','SEO / blog','Native ads','Email','Push','Social organic','YouTube','Other'];
 const PTYPE=['Lead','Sale','Install','Call'];
 
-/* ===== PART 2: DATABASE LAYER (replace later with Supabase/Firebase) =====
-   Keys: aff offers-affiliates, off, clk clicks, imp impressions, led leads, ban, rst, adm, mgr managers, req access requests, log, seq */
-const DB={
-  g:(k,d)=>{try{return JSON.parse(localStorage.getItem('vx_'+k))??d}catch(e){return d}},
-  s:(k,v)=>{try{localStorage.setItem('vx_'+k,JSON.stringify(v))}catch(e){toast('Browser storage is full')}}
-};
-const affs=()=>DB.g('aff',[]),offs=()=>DB.g('off',[]),mgrs=()=>DB.g('mgr',[]);
-const saveAff=(k,fn)=>{const a=affs();a.forEach(x=>{if(x.id===k||x.email===k)fn(x)});DB.s('aff',a)};
-const blocked=(e,p)=>DB.g('ban',[]).some(b=>b.email===e||(p&&b.phone&&b.phone===p));
-const lg=(a,t,w)=>{const l=DB.g('log',[]);l.push({t:Date.now(),a:a||'',w:w||'aff',x:t});DB.s('log',l.slice(-1500))};
+/* ==========================================
+   FILE 3 of 4: portal.js (ALL LOGIC / JAVASCRIPT CODE)
+   PART 1: Settings | PART 2: Database Layer | PART 3: Helpers & stats
+   ========================================== */
 
+// --- PART 1: SETTINGS (Edit these) ---
+const ADMIN_EMAIL = "admin@vedantix.com";
+const ADMIN_PASS = "change-me-123";
+const TRACK = "go.html";
+const VENT = ["Home Improvement", "Finance", "Health & Wellness", "Loan", "E-commerce", "Insurance", "Other"];
+const TRAF = ["Facebook ads", "Google ads", "SEO / Blog", "Native ads", "Email", "Push", "Social organic", "YouTube", "Other"];
+const PTYPE = ["Lead", "Sale", "Install", "Call"];
+
+// --- PART 2: DATABASE LAYER (Supabase Integration) ---
+const SUPABASE_URL = 'https://mtygalcritplvahhodji.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_H0SSbV3_DnIWuO1o-spplQ_583Ukeb1';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const DB = {
+  async add(data) {
+    const { data: result, error } = await supabase
+      .from('queries')
+      .insert([
+        {
+          name: data.Name || data.name || '',
+          email: data.Email || data.email || '',
+          message: data.Message || data.message || '',
+          phone: data['Phone Number'] || data.Phone || data.phone || ''
+        }
+      ]);
+
+    if (error) {
+      console.error('Error inserting data to Supabase:', error);
+      return null;
+    }
+    return result;
+  }
+};
+
+// --- PART 3: HELPERS & STATS ---
+const $ = id => document.getElementById(id);
+const d84600000 = 86400000;
+
+const esc = s => (s + '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+
+const safeUrl = u => {
+  if (!u) return '#';
+  if (/^https?:\/\//i.test(u)) return u;
+  return 'https://' + u;
+};
+
+const msg = (id, txt, isErr) => {
+  const el = $(id);
+  if (el) {
+    el.innerText = txt;
+    el.className = 'msg ' + (isErr ? 'err' : 'ok');
+  }
+};
+
+const toast = (txt, c = '') => {
+  const t = $('toast');
+  if (t) {
+    t.innerText = txt;
+    t.className = 'toast ' + (c ? c : '');
+    setTimeout(() => { t.className = 'toast'; }, 3000);
+  }
+};
+
+const chk = (f, n) => Array.from(f.querySelectorAll(`input[name="${n}"]:checked`)).map(x => x.value);
+const inp = (f, n) => {
+  const el = f.querySelector(`[name="${n}"]`);
+  return el ? el.value.trim() : '';
+};
 /* ===== PART 3: HELPERS & STATS ===== */
 const $=i=>document.getElementById(i);
 const D=86400000;
